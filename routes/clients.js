@@ -12,6 +12,7 @@
     });
     router.post('/', function(req, res, next) {
         res.send('respond with a resource');
+        //hey
     });
 
 
@@ -82,6 +83,7 @@
             res.send(result);
         });
     });
+
 
     router.put('/deleteClient', function (req,res){
                 DButilsAzure.deleteClient(req.body.UserName, function (result) {
