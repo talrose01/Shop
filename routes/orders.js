@@ -36,11 +36,11 @@ var orderToInsert= new Object();
     orderToInsert.totalPrice= req.body.totalPrice;
     var splitMovie=req.body.movieList.split("*");
 
-
     InsertToOrder(orderToInsert)
     .then(function(varibleOrder){
         return new Promise(function(resolve,reject){
-            DButilsAzure.getOrderId( function (result) {
+            var quer="Select top 1 orderId from  dbo.Orders order by orderId desc";
+            DButilsAzure.select( quer,function (result) {
                 console.log("bey");
                 resolve(result[0].orderId);
 
@@ -85,7 +85,9 @@ str2+=splitMovie[i]+",";
             });
         })
         .then(function(last){
-            DButilsAzure.getLastOrder( function (result) {
+            var quer="SELECT TOP 1 * FROM dbo.Orders  ORDER BY orderId DESC";
+
+            DButilsAzure.select( quer,function (result) {
                 res.send(result);
 
             })
@@ -93,18 +95,22 @@ str2+=splitMovie[i]+",";
 });
 
 router.post('/getPreviousOrders', function (req,res){
-    DButilsAzure.getPreviousOrders( req.body.UserName, function (result) {
+    var quer="SELECT * FROM dbo.Orders Where UserName='"+ req.body.UserName+"\'";
+    DButilsAzure.select(quer, function (result) {
         res.send(result);
     });
 });
 
 router.post('/getOrder', function (req,res){
-    DButilsAzure.getOrder( req.body.orderId, function (result) {
+    var quer="Select * from  dbo.Orders WHERE orderId=\'"+req.body.orderId+"\'";
+    DButilsAzure.select( quer, function (result) {
         res.send(result);
     });
 });
 router.post('/getOrdersOfUser', function (req,res){
-    DButilsAzure.getOrdersOfUser( req.body.UserName, function (result) {
+    var quer="Select * from  dbo.Orders WHERE UserName=\'"+object+"\'";
+
+    DButilsAzure.select( quer, function (result) {
         res.send(result);
     });
 });

@@ -66,30 +66,33 @@
             })
     });
     router.post('/login', function (req,res){
-        var loginDetails=new Object();
-        loginDetails.UserName=req.body.UserName;
-        loginDetails.password=req.body.password;
-        DButilsAzure.login( loginDetails, function (result) {
+        var quer="Select UserName from  dbo.Clients WHERE UserName=\'"+req.body.UserName+"\' AND password=\'"+req.body.password +"\'";
+
+        DButilsAzure.select( quer, function (result) {
             res.send(result);
         });
     });
     router.post('/getQuestions', function (req,res){
-        DButilsAzure.getQuestions( req.body.UserName, function (result) {
+        var quer="Select question1, question2, answer1, answer2 From QAndA where UserName='"+req.body.UserName+"\'";
+        DButilsAzure.select(quer , function (result) {
             res.send(result);
         });
     });
     router.get('/getAllClients', function (req,res){
-        DButilsAzure.getAllClients(  function (result) {
+        var quer="Select * from  dbo.Clients";
+        DButilsAzure.select( quer, function (result) {
             res.send(result);
         });
     });
 
 
     router.put('/deleteClient', function (req,res){
-                DButilsAzure.deleteClient(req.body.UserName, function (result) {
+        var quer="Delete from  dbo.Clients WHERE UserName=\'"+req.body.UserName+"\'";
+        DButilsAzure.delet(quer, function (result) {
             res.send(result);
         });
     });
+
     module.exports = router;
 
 

@@ -27,6 +27,8 @@
 
 
         exports.InsertClient= function(object, callback){
+            var quer="INSERT INTO dbo.MoviesInOrders (orderId,movieId,amount) VALUES "+ object;
+
             var req= new Request("INSERT INTO dbo.Clients  VALUES (@UserName,@password,@firstName,@lastName,@adress,@city,@country,@phone,@Mail,@creditCardNumber,@LastLogin,@isAdmin)",function(err,rowCount){
                 if(err){
                     console.log(err);
@@ -57,64 +59,7 @@
             connection.execSql(req);
         };
 
-        exports.login= function(object, callback){
-            var quer="Select UserName from  dbo.Clients WHERE UserName=\'"+object.UserName+"\' AND password=\'"+object.password +"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-         columns.forEach(function(column){
-             if(column.colName!= null)
-                 properties.push(column.colName)
-         });
-            });
 
-            req.on('row', function (row) {
-                var item={};
-        for(i=0;i<row.length;i++){
-            item[properties[i]]=row[i].value;
-        }
-        res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-               callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        exports.getMovieId= function(object, callback){
-            var quer="Select movieId from  dbo.Movies WHERE movieName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
         exports.InsertMovie= function(object, callback){
             var req= new Request("INSERT INTO dbo.Movies  VALUES (@movieName,@directorId,@description,@price,@stockAmount, @publishedYear,@language,@picturePath,@addedDate)",function(err,rowCount){
                 if(err){
@@ -142,63 +87,6 @@
             connection.execSql(req);
         };
 
-        exports.InsertToCart= function(object, callback){
-            var quer="Select from  dbo.MoviesInCarts WHERE UserName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-            });
-            connection.execSql(req);
-        };
-        exports.InsertToCart= function(object, callback){
-            var quer="Select from  dbo.MoviesInCarts WHERE UserName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
 
         exports.InsertOrder= function(object, callback){
             var req= new Request("INSERT INTO dbo.Orders  VALUES (@UserName,@orderDate,@shipmentDate,@Dollar,@totalPrice)",function(err,rowCount){
@@ -289,96 +177,6 @@
         };
 
 
-        exports.getAllMovies= function(callback){
-            var quer="Select * from  dbo.Movies";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        exports.getTopFive= function(callback){
-            var quer="Select Top 5 M.movieID,M.movieName,directorId,description,price,stockAmount,publishedYear,language,picturePath From Movies AS M, MoviesInOrders AS MIO, Orders AS O Where O.orderDate BETWEEN CURRENT_TIMESTAMP-7 AND CURRENT_TIMESTAMP AND M.movieId=MIO.movieId AND MIO.orderId = O.orderId Group By M.movieID,M.movieName,directorId,description,price,stockAmount,publishedYear,language,picturePath Order by sum(MIO.amount) desc";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
-        exports.getMoviesByCategory= function(object, callback){
-            var quer="Select from  dbo.MoviesInCarts WHERE category=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
         exports.InsertMovieCategory= function(categoryId,object, callback){
             var quer="INSERT INTO dbo.MoviesCategories  VALUES (@movieId,@categoryId)";
             var req= new Request(quer,function(err,rowCount){
@@ -400,189 +198,6 @@
         };
 
 
-        exports.getCategoryId= function(object, callback){
-            var quer="Select categoryId from  dbo.Categories WHERE categoryName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res[0].categoryId);
-                callback(res[0].categoryId);
-
-            });
-            connection.execSql(req);
-        };
-
-        exports.getMoviesInCategories= function(object, callback){
-
-            var quer="Select * From MoviesCategories AS MC, Movies AS M Where MC.CategoryID="+object+"AND MC.MovieID=M.MovieID";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
-
-
-
-
-        exports.returnMoviesOfCat= function(object, callback){
-            var quer="Select from  dbo.MoviesCategories WHERE categoryId=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
-
-        exports.getAllMovies= function(callback){
-            var quer="Select * from  dbo.Movies";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
-
-        exports.deleteClient= function(object, callback){
-            var quer="Delete from  dbo.Clients WHERE UserName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-                if(err){
-                    console.log(err);
-                    callback('false')
-                }
-                else{
-                    callback('true')
-                }
-            });
-
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                 });
-            connection.execSql(req);
-        };
-
-//getOrderId
-        /*SELECT TOP 1 *
-        FROM table
-        ORDER
-        BY Id DESC;*/
-        exports.getOrderId= function( callback){
-            var quer="Select top 1 orderId from  dbo.Orders order by orderId desc";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-
         exports.insertListOfMovies= function(object, callback){
             var quer="INSERT INTO dbo.MoviesInOrders (orderId,movieId,amount) VALUES "+ object;
             var req= new Request(quer,function(err,rowCount){
@@ -600,36 +215,7 @@
             connection.execSql(req);
         };
 
-        exports.getMovieAmount= function(object, callback){
-            var quer="Select stockAmount from  dbo.Movies WHERE movieId=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
 
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
         //updateStockAmount
         exports.updateStockAmount= function(object, callback){
                       var req= new Request(object ,function(err,rowCount){
@@ -667,34 +253,7 @@
             connection.execSql(req);
         };
 
-        exports.getQuestions= function(object, callback){
-            var quer="Select question1, question2, answer1, answer2 From QAndA where UserName='ya'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
 
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
 
         exports.searchMovieByCategory= function(object, callback){
 
@@ -727,70 +286,7 @@
             });
             connection.execSql(req);
         };
-        //getNewestMovies
-        exports.getNewestMovies= function(callback){
 
-            var quer="Select * From Movies Where Movies.addedDate BETWEEN CURRENT_TIMESTAMP-30 AND CURRENT_TIMESTAMP";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        exports.getInventory= function(callback){
-
-            var quer="Select movieID,movieName,stockAmount From Movies";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        //InsertClientCategory
         exports.InsertClientCategory= function(object,callback){
             // (UserName,category1,category2,category3)
             var quer="INSERT INTO dbo.ClientsCategories VALUES "+ object;
@@ -808,233 +304,19 @@
             });
             connection.execSql(req);
         };
-        //
-        //
-/*        exports.deleteUser= function(object,callback){
-            // (UserName,category1,category2,category3)
-            var quer="Delete From Clients Where Clients.UserName='"+object+"\'" ;
-            var req= new Request(quer,function(err,rowCount){
-                if(err){
-                    console.log(err);
-                    callback('false')
-                }
-                else{
-                    callback('true')
-                }
-            });
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-            });
-            connection.execSql(req);
-        };*/
-        exports.deleteMovie= function(object,callback){
-            // (UserName,category1,category2,category3)
-            var quer="Delete From Movies Where Movies.movieId='"+object+"\'" ;
-            var req= new Request(quer,function(err,rowCount){
-                if(err){
-                    console.log(err);
-                    callback('false')
-                }
-                else{
-                    callback('true')
-                }
-            });
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-            });
-            connection.execSql(req);
-        };
 
 
 
-        exports.getLastOrder= function(callback){
-            var quer="SELECT TOP 1 * FROM dbo.Orders  ORDER BY orderId DESC";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
 
 
-        exports.getPreviousOrders= function(object,callback){
-            var quer="SELECT * FROM dbo.Orders Where UserName='"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
 
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
 
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
 
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        //getRecommendedProduct
-        exports.getRecommendedMovies= function(object,callback){
-            var quer="Select top 2 MC.movieId, SUM(MIO.amount)  From  ClientsCategories AS CC, MoviesCategories AS MC, MoviesInOrders AS MIO Where MIO.movieId = MC.movieId AND CC.UserName = '"+object+"' AND (CC.category1 = MC.categoryId OR CC.category2 = MC.categoryId OR CC.category3 = MC.categoryId) AND MC.movieId NOT IN (Select MIO.movieId From Orders AS O, MoviesInOrders AS MIO, MoviesCategories AS MC Where O.UserName ='"+object+"' AND O.orderId = MIO.orderId) Group By MC.movieId Having SUM(MIO.amount) >= ALL(SELECT SUM(MIO.amount) From MoviesInOrders AS MIO Where MIO.movieId = MC.movieId Group By MIO.movieId)";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        exports.getMovie= function(object,callback){
-            var quer="Select * from  dbo.Movies WHERE movieId=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        //getOrder
-        exports.getOrder= function(object,callback){
-            var quer="Select * from  dbo.Orders WHERE orderId=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
-        exports.getOrdersOfUser= function(object,callback){
-            var quer="Select * from  dbo.Orders WHERE UserName=\'"+object+"\'";
-            var req= new Request(quer ,function(err,rowCount){
-            });
-            var res= [];
-            var properties=[];
-
-            req.on('columnMetadata', function (columns) {
-                columns.forEach(function(column){
-                    if(column.colName!= null)
-                        properties.push(column.colName)
-                });
-            });
-
-            req.on('row', function (row) {
-                var item={};
-                for(i=0;i<row.length;i++){
-                    item[properties[i]]=row[i].value;
-                }
-                res.push(item);
-            });
-
-            req.on('requestCompleted', function () {
-                console.log('requestCompleted with' + req.rowCount +' rows ');
-                console.log(res);
-                callback(res);
-
-            });
-            connection.execSql(req);
-        };
         //getAllClients
-        exports.getAllClients= function(callback){
-            var quer="Select * from  dbo.Clients";
-            var req= new Request(quer ,function(err,rowCount){
+
+        //**********************************new****************************
+      function select(quer,callback){
+                       var req= new Request(quer ,function(err,rowCount){
             });
             var res= [];
             var properties=[];
@@ -1062,4 +344,21 @@
             });
             connection.execSql(req);
         };
-        //isAdmin
+        function delet(object,callback){
+            // (UserName,category1,category2,category3)
+            var req= new Request(quer,function(err,rowCount){
+                if(err){
+                    console.log(err);
+                    callback('false')
+                }
+                else{
+                    callback('true')
+                }
+            });
+            req.on('requestCompleted', function () {
+                console.log('requestCompleted with' + req.rowCount +' rows ');
+            });
+            connection.execSql(req);
+        };
+        module.exports.select = select
+        module.exports.delet = delet
