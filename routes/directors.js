@@ -22,6 +22,12 @@ router.post('/addDirector', function (req,res) {
         res.send(result);
     });
 });
+router.get('/getAllDirectors', function (req,res){
+    var quer="Select * from  dbo.Directors";
+    DButilsAzure.select(quer, function (result) {
+        res.send(result);
+    });
+});
 module.exports = router;
 
 

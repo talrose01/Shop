@@ -97,8 +97,7 @@ str2+=splitMovie[i]+",";
 router.post('/getPreviousOrders', function (req,res){
     var quer="SELECT * FROM dbo.Orders Where UserName='"+ req.body.UserName+"\'";
     DButilsAzure.select(quer, function (result) {
-        //hey
-        res.send(result);
+         res.send(result);
     });
 });
 
@@ -109,8 +108,7 @@ router.post('/getOrder', function (req,res){
     });
 });
 router.post('/getOrdersOfUser', function (req,res){
-    var quer="Select * from  dbo.Orders WHERE UserName=\'"+object+"\'";
-
+    var quer="Select * from  dbo.Orders WHERE UserName=\'"+req.body.UserName+"\'";
     DButilsAzure.select( quer, function (result) {
         res.send(result);
     });

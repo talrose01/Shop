@@ -22,6 +22,12 @@ router.post('/addCategory', function (req,res) {
         res.send(result);
     });
 });
+router.get('/getAllCategories', function (req,res){
+    var quer="Select * from  dbo.Categories";
+    DButilsAzure.select(quer, function (result) {
+        res.send(result);
+    });
+});
 module.exports = router;
 
 

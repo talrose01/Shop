@@ -27,6 +27,13 @@
 
 
     router.post('/register', function (req,res) {
+        var currentdate= new Date();
+        var datetime =  currentdate.getDate() + "-"
+            + (currentdate.getMonth()+1)  + "-"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
         var registerDetails = new Object();
         registerDetails.UserName = req.body.UserName;
         registerDetails.password = req.body.password;
@@ -38,7 +45,7 @@
         registerDetails.phone = req.body.phone;
         registerDetails.Mail = req.body.Mail;
         registerDetails.creditCardNumber = req.body.creditCardNumber;
-        registerDetails.LastLogin = req.body.LastLogin;
+        registerDetails.LastLogin = datetime;
         registerDetails.isAdmin = req.body.isAdmin;
         var categoryDetails = "";
 
@@ -66,10 +73,34 @@
             })
     });
     router.post('/login', function (req,res){
-        var quer="Select UserName from  dbo.Clients WHERE UserName=\'"+req.body.UserName+"\' AND password=\'"+req.body.password +"\'";
-        DButilsAzure.select( quer, function (result) {
-            res.send(result);
-        });
+        var currentdate= new Date();
+        var datetime =  currentdate.getDate() + "-"
+            + (currentdate.getMonth()+1)  + "-"
+            + currentdate.getFullYear() + " @ "
+            + currentdate.getHours() + ":"
+            + currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
+        return new Promise(function(resolve,reject){
+            var quer="Select UserName from  dbo.Clients WHERE UserName=\'"+req.body.UserName+"\' AND password=\'"+req.body.password +"\'";
+            DButilsAzure.select( quer, function (result) {
+                //res.send(result);
+                resolve(result);
+            });
+        })
+        .then(function(userName){
+            if(userName.length>0){
+               var queri="update Clients set LastLogin='"+datetime+"' where Clients.UserName='talRose'";
+                DButilsAzure.delet(queri, function (result) {
+                    if(result){
+                        res.send(userName);
+                    }
+                    else
+                        res.send(result);
+                });
+            }
+            else
+                res.send('false');
+        })
     });
     router.post('/getQuestions', function (req,res){
         var quer="Select question1, question2, answer1, answer2 From QAndA where UserName='"+req.body.UserName+"\'";

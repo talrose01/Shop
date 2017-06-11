@@ -33,7 +33,7 @@ let categoryIdByName=function(catName){
 let getMoviesInCategories=function(categoryId){
     return new Promise(function(resolve,reject){
         var quer="Select * From MoviesCategories AS MC, Movies AS M Where MC.CategoryID="+categoryId+"AND MC.MovieID=M.MovieID";
-        DButilsAzure.getMoviesInCategories(quer, function (result) {
+        DButilsAzure.select(quer, function (result) {
             resolve(result);
         })
     });
@@ -59,14 +59,15 @@ router.post('/searchMovieByCategory', function(req, res) {
 });
 
 router.post('/getMoviesByCategory', function(req, res) {
-    var quer="Select from  dbo.MoviesInCarts WHERE category=\'"+req.body.categoryId+"\'";
+    var quer="Select movieId from  dbo.MoviesCategories WHERE categoryId=\'"+req.body.categoryId+"\'";
 
-    DButilsAzure.getMoviesInCategories(quer, function (result) {
+    DButilsAzure.select(quer, function (result) {
         res.send(result);
     })
 });
 router.get('/getNewestMovies', function(req, res) {
-    var quer="Select * From Movies Where Movies.addedDate BETWEEN CURRENT_TIMESTAMP-30 AND CURRENT_TIMESTAMP";
+     var quer="Select * From Movies Where DATEDIFF(day ,addedDate ,CONVERT (date, GETDATE())) <= 30";
+ //   var quer="Select * From Movies Where Movies.addedDate BETWEEN CURRENT_TIMESTAMP-30 AND CURRENT_TIMESTAMP";
     DButilsAzure.select(quer,function (result) {
         res.send(result);
     })
@@ -100,7 +101,11 @@ router.post('/addMovie', function (req,res) {
     MovieDetails.publishedYear=req.body.publishedYear;
     MovieDetails.language=req.body.language;
     MovieDetails.picturePath=req.body.picturePath;
-    MovieDetails.addedDate=req.body.addedDate;
+    var currentdate= new Date();
+    var datetime = currentdate.getDate() + "-"
+        + (currentdate.getMonth()+1)  + "-"
+        + currentdate.getFullYear() + " 00:00:00.000";
+    MovieDetails.addedDate=datetime;
 //add movie to movies
     insertMovie(MovieDetails)
     //get movie id by name
@@ -129,8 +134,9 @@ router.post('/deleteMovie', function (req,res){
 });
 
 router.post('/getRecommendedMovies', function(req, res) {
-    var quer="Select top 2 MC.movieId, SUM(MIO.amount)  From  ClientsCategories AS CC, MoviesCategories AS MC, MoviesInOrders AS MIO Where MIO.movieId = MC.movieId AND CC.UserName = '"+req.body.UserName+"' AND (CC.category1 = MC.categoryId OR CC.category2 = MC.categoryId OR CC.category3 = MC.categoryId) AND MC.movieId NOT IN (Select MIO.movieId From Orders AS O, MoviesInOrders AS MIO, MoviesCategories AS MC Where O.UserName ='"+req.body.UserName+"' AND O.orderId = MIO.orderId) Group By MC.movieId Having SUM(MIO.amount) >= ALL(SELECT SUM(MIO.amount) From MoviesInOrders AS MIO Where MIO.movieId = MC.movieId Group By MIO.movieId)";
-    DButilsAzure.select(quer, function (result) {
+
+var quer="Select top 3 M.movieID,M.movieName,directorId,description,price,stockAmount,publishedYear,language,picturePath From  ClientsCategories AS CC, MoviesCategories AS MC, MoviesInOrders AS MIO, Movies AS M Where MIO.movieId = M.movieId AND MIO.movieId = MC.movieId AND M.movieId = MC.movieId AND CC.UserName ='"+req.body.UserName+"' AND (CC.category1 = MC.categoryId OR CC.category2 = MC.categoryId OR CC.category3 = MC.categoryId) AND M.movieId NOT IN (Select MIO.movieId From Orders AS O, MoviesInOrders AS MIO, MoviesCategories AS MC Where O.UserName ='"+req.body.UserName+"' AND O.orderId = MIO.orderId) Group By M.movieID,M.movieName,directorId,description,price,stockAmount,publishedYear,language,picturePath Having SUM(MIO.amount) >= ALL(SELECT SUM(MIO.amount) From MoviesInOrders AS MIO Where MIO.movieId = M.movieId Group By MIO.movieId)"
+   DButilsAzure.select(quer, function (result) {
         res.send(result);
     })
 });

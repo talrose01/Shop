@@ -346,7 +346,7 @@
         };
         function delet(object,callback){
             // (UserName,category1,category2,category3)
-            var req= new Request(quer,function(err,rowCount){
+            var req= new Request(object,function(err,rowCount){
                 if(err){
                     console.log(err);
                     callback('false')
