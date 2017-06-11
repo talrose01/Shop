@@ -97,6 +97,7 @@ str2+=splitMovie[i]+",";
 router.post('/getPreviousOrders', function (req,res){
     var quer="SELECT * FROM dbo.Orders Where UserName='"+ req.body.UserName+"\'";
     DButilsAzure.select(quer, function (result) {
+        //hey
         res.send(result);
     });
 });
