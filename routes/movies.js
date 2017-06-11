@@ -40,7 +40,7 @@ let getMoviesInCategories=function(categoryId){
 }
 router.post('/getMovieAmount', function(req, res) {
     var quer="Select stockAmount from  dbo.Movies WHERE movieId=\'"+req.body.movieId+"\'";
-    DButilsAzure.select(req.body.movieId, function (result) {
+    DButilsAzure.select(quer, function (result) {
         res.send(result);
     })
 });
@@ -107,7 +107,7 @@ router.post('/addMovie', function (req,res) {
         .then(function(movieIn){
             return new Promise(function(resolve,reject){
                 var quer="Select movieId from  dbo.Movies WHERE movieName=\'"+MovieDetails.movieName+"\'";
-                DButilsAzure.getMovieId(quer, function (result) {
+                DButilsAzure.select(quer, function (result) {
                   /*  var rowDetails=new Object();
                     rowDetails.movieId=result[0].movieId;*/
                     resolve(result[0].movieId);
